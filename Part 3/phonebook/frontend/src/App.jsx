@@ -66,8 +66,12 @@ const App = () => {
         setNewNumber("");
         notify(`Added ${returnedPerson.name}`, "success");
       })
-      .catch(() => {
-        notify(`Failed to add ${newName}. Please try again.`, "error");
+      .catch((error) => {
+        notify(
+          error.response?.data?.error ||
+            "An error occurred while adding the person.",
+          "error",
+        );
       });
   };
 
