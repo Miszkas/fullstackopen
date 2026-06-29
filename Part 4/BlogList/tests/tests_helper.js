@@ -1,4 +1,5 @@
 const Blog = require("../models/blog");
+const bcrypt = require("bcrypt");
 
 const initialBlogs = [
   {
@@ -21,6 +22,19 @@ const initialBlogs = [
   },
 ];
 
+const initialUsers = [
+  {
+    username: "Alex Chen",
+    passwordHash: bcrypt.hashSync("password123", 10),
+    name: "Test User One",
+  },
+  {
+    username: "Sarah Jenkins",
+    passwordHash: bcrypt.hashSync("password456", 10),
+    name: "Test User Two",
+  },
+];
+
 const nonExistingId = async () => {
   const blog = new Blog({ content: "willremovethissoon" });
   await blog.save();
@@ -38,4 +52,5 @@ module.exports = {
   initialBlogs,
   nonExistingId,
   blogsInDb,
+  initialUsers,
 };

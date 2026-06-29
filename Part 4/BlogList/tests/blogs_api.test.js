@@ -1,16 +1,19 @@
 const assert = require("node:assert");
-const { test, after, beforeEach } = require("node:test");
+const { test, after, beforeEach, describe } = require("node:test");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const helper = require("./tests_helper");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+  await User.deleteMany({});
+  await User.insertMany(helper.initialUsers);
 });
 
 test("blogs are returned as json", async () => {
@@ -117,6 +120,59 @@ test("blog can be updated", async () => {
   const blogToCheck = newBlogs.body.find((b) => b.id === blogToUpdate.id);
 
   assert.strictEqual(updatedBlog.likes, blogToCheck.likes);
+});
+
+describe("users testing", () => {
+  test("user can be created", async () => {
+    const newUser = {
+      username: "testuser",
+      password: "testpassword",
+      name: "Test User",
+    };
+
+    const usersBefore = await api.get("/api/users");
+
+    await api.post("/api/users").send(newUser).expect(201);
+
+    const usersAfter = await api.get("/api/users");
+    assert.strictEqual(usersAfter.body.length, usersBefore.body.length + 1);
+
+    const usernames = usersAfter.body.map((user) => user.username);
+    assert.strictEqual(usernames.includes(newUser.username), true);
+  });
+
+  test("user cannot be created with short username or password", async () => {
+    const newInvalidUser = {
+      username: "ab",
+      password: "12",
+      name: "Invalid User",
+    };
+
+    const usersBefore = await api.get("/api/users");
+
+    await api.post("/api/users").send(newInvalidUser).expect(400);
+
+    const usersAfter = await api.get("/api/users");
+    assert.strictEqual(usersAfter.body.length, usersBefore.body.length);
+
+    const usernames = usersAfter.body.map((user) => user.username);
+    assert.strictEqual(usernames.includes(newInvalidUser.username), false);
+  });
+
+  test("user without unique username cannot be created", async () => {
+    const newUser = {
+      username: "Alex Chen",
+      password: "anotherpassword",
+      name: "Another User",
+    };
+
+    const usersBefore = await api.get("/api/users");
+
+    await api.post("/api/users").send(newUser).expect(400);
+
+    const usersAfter = await api.get("/api/users");
+    assert.strictEqual(usersAfter.body.length, usersBefore.body.length);
+  });
 });
 
 after(async () => {
