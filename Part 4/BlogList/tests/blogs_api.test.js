@@ -14,6 +14,12 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs);
   await User.deleteMany({});
   await User.insertMany(helper.initialUsers);
+
+  const loginResponse = await api
+    .post("/api/login")
+    .send({ username: "Alex Chen", password: "password123" });
+
+  token = loginResponse.body.token;
 });
 
 test("blogs are returned as json", async () => {
@@ -38,6 +44,7 @@ test("valid blog can be added", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -58,6 +65,7 @@ test("undefined likes are equal 0 in db", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -74,7 +82,11 @@ test("blog without title cannot be added", async () => {
     likes: 5,
   };
 
-  await api.post("/api/blogs").send(newBlog).expect(400);
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send(newBlog)
+    .expect(400);
 });
 
 test("blog without url cannot be added", async () => {
@@ -84,20 +96,35 @@ test("blog without url cannot be added", async () => {
     likes: 5,
   };
 
-  await api.post("/api/blogs").send(newBlog).expect(400);
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send(newBlog)
+    .expect(400);
 });
 
 test("blog can be deleted", async () => {
-  const blogs = await api.get("/api/blogs");
-  const idToDelete = blogs.body[0].id;
+  const newBlog = {
+    title: "Blog to be deleted",
+    author: "Test Author",
+    url: "https://delete-me.com",
+  };
 
-  await api.delete(`/api/blogs/${idToDelete}`).expect(204);
+  const addBlog = await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send(newBlog)
+    .expect(201);
+
+  const idToDelete = addBlog.body.id;
+
+  await api
+    .delete(`/api/blogs/${idToDelete}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(204);
 
   const blogsAfterDelete = await api.get("/api/blogs");
-  assert.strictEqual(
-    blogsAfterDelete.body.length,
-    helper.initialBlogs.length - 1,
-  );
+  assert.strictEqual(blogsAfterDelete.body.length, helper.initialBlogs.length);
 
   const ids = blogsAfterDelete.body.map((blog) => blog.id);
   assert.strictEqual(ids.includes(idToDelete), false);
@@ -114,7 +141,10 @@ test("blog can be updated", async () => {
     likes: 1234567,
   };
 
-  await api.put(`/api/blogs/${blogToUpdate.id}`).send(updatedBlog);
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .send(updatedBlog);
 
   const newBlogs = await api.get("/api/blogs");
   const blogToCheck = newBlogs.body.find((b) => b.id === blogToUpdate.id);
@@ -173,6 +203,22 @@ describe("users testing", () => {
     const usersAfter = await api.get("/api/users");
     assert.strictEqual(usersAfter.body.length, usersBefore.body.length);
   });
+});
+
+test("blog cannot be added without token", async () => {
+  const newBlog = {
+    title: "Test Blog",
+    author: "Test Author",
+    url: "https://test.com",
+    likes: 0,
+  };
+
+  const blogsBefore = await api.get("/api/blogs");
+
+  await api.post("/api/blogs").send(newBlog).expect(401);
+
+  const blogsAfter = await api.get("/api/blogs");
+  assert.strictEqual(blogsAfter.body.length, blogsBefore.body.length);
 });
 
 after(async () => {

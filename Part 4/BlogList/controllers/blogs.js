@@ -2,14 +2,7 @@ const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-
-const getTokenFrom = (request) => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.startsWith("Bearer ")) {
-    return authorization.replace("Bearer ", "");
-  }
-  return null;
-};
+const middleware = require("../utils/middleware");
 
 blogsRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", {
@@ -19,14 +12,13 @@ blogsRouter.get("/", async (request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   const body = request.body;
-  const token = getTokenFrom(request);
-  const decodedToken = jwt.verify(token, process.env.SECRET);
-  if (!decodedToken.id) {
+  const user = request.user;
+
+  if (!user) {
     return response.status(401).json({ error: "token missing or invalid" });
   }
-  const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     title: body.title,
@@ -43,12 +35,33 @@ blogsRouter.post("/", async (request, response) => {
   await user.save();
 });
 
-blogsRouter.delete("/:id", async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id);
-  response.status(204).end();
-});
+blogsRouter.delete(
+  "/:id",
+  middleware.userExtractor,
+  async (request, response) => {
+    if (!request.user) {
+      return response.status(401).json({ error: "token missing or invalid" });
+    }
 
-blogsRouter.put("/:id", async (request, response) => {
+    const userId = request.user._id;
+
+    const blog = await Blog.findById(request.params.id);
+    if (!blog) {
+      return response.status(404).end();
+    }
+
+    if (blog.user.toString() !== userId.toString()) {
+      return response
+        .status(401)
+        .json({ error: "Unauthorized to delete this blog" });
+    }
+
+    await Blog.findByIdAndDelete(request.params.id);
+    response.status(204).end();
+  },
+);
+
+blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body;
 
   const blog = await Blog.findById(request.params.id);
