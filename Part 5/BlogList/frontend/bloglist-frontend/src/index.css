@@ -1,0 +1,33 @@
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.blog-title {
+  font-weight: bold;
+  color: darkolivegreen;
+}
+
+.notification {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.notification.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 2px solid #00b029;
+}
+
+.notification.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 2px solid #f80019;
+}

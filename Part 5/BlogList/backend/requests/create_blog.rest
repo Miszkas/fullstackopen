@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFsZXggQ2hlbiIsImlkIjoiNmE0MjJlYzIxNGQ5YWUyN2M1MjA1ZmVkIiwiaWF0IjoxNzgyNzIyNzIwfQ.D8D8GhrbUXNI7QcYLQ9yAvml18mo51xGUQ4mXct7rBo
+
+{
+    "title": "Test Blog after restructurisation",
+    "author": "miszasm",
+    "url": "http://example.com/test-blog",
+    "likes": 0
+}
