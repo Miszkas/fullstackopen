@@ -7,6 +7,13 @@ a {
   color: inherit;
 }
 
+.blog {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .blog-title {
   font-weight: bold;
   color: darkolivegreen;
