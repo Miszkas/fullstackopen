@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1785414836624" clover="3.2.0">
+  <project timestamp="1785414836624" name="All files">
+    <metrics statements="21" coveredstatements="20" conditionals="9" coveredconditionals="9" methods="9" coveredmethods="8" elements="39" coveredelements="37" complexity="0" loc="21" ncloc="21" packages="1" files="2" classes="2"/>
+    <file name="Blog.jsx" path="/Users/miszasm/MiszaSm/Coding/fullstackopen/Part 5/BlogList/frontend/bloglist-frontend/src/components/Blog.jsx">
+      <metrics statements="7" coveredstatements="6" conditionals="9" coveredconditionals="9" methods="4" coveredmethods="3"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="5" type="stmt"/>
+      <line num="6" count="5" type="cond" truecount="3" falsecount="0"/>
+      <line num="8" count="5" type="stmt"/>
+      <line num="12" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="25" count="2" type="stmt"/>
+      <line num="29" count="0" type="stmt"/>
+    </file>
+    <file name="BlogForm.jsx" path="/Users/miszasm/MiszaSm/Coding/fullstackopen/Part 5/BlogList/frontend/bloglist-frontend/src/components/BlogForm.jsx">
+      <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="47" type="stmt"/>
+      <line num="5" count="47" type="stmt"/>
+      <line num="6" count="47" type="stmt"/>
+      <line num="8" count="47" type="stmt"/>
+      <line num="9" count="1" type="stmt"/>
+      <line num="11" count="1" type="stmt"/>
+      <line num="17" count="1" type="stmt"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="19" count="1" type="stmt"/>
+      <line num="22" count="47" type="stmt"/>
+      <line num="33" count="15" type="stmt"/>
+      <line num="44" count="11" type="stmt"/>
+      <line num="55" count="19" type="stmt"/>
+    </file>
+  </project>
+</coverage>

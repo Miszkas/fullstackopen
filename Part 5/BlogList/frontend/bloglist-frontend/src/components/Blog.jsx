@@ -11,16 +11,16 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
         {blog.title}{' '}
         <button onClick={() => setOpen(!open)}>{open ? 'hide' : 'view'}</button>
       </div>
+      <div>Author: {blog.author}</div>
       {open && (
         <div>
-          <div>Author: {blog.author}</div>
-          <div>
+          <div className="blog-url">
             URL:{' '}
             <a href={blog.url} target="_blank">
               {blog.url}
             </a>
           </div>
-          <div>
+          <div className="blog-likes">
             Likes: {blog.likes}{' '}
             <button onClick={() => handleLike(blog)}>like</button>
           </div>
